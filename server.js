@@ -33,6 +33,17 @@ app.get('/', async (req, res) => {
   res.send('Show us what you gots');
 });
 
+app.get('/login', async (req, res) => {
+  const userData = req.body;
+  var user = await User.findOne({ name: userData.name });
+  console.log(user);
+  const match = await bcrypt.compare(userData.password, user.password);
+  if (match) {
+    res.send("Password is correct, logging in");
+  }
+  else res.send("Password incorrect");
+})
+
 app.post('/', async (req, res) => {
   var data = req.body;
   await bcrypt.hash(data.password, saltRounds, function(err, hash) {
