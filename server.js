@@ -22,12 +22,21 @@ const userSchema = new mongoose.Schema({
   age: Number,
   password: String
 });
+const dataSchema = new mongoose.Schema({
+  id: String,
+  s1: {},
+  s2: {},
+  s3: {}
+});
 const User = mongoose.model('User', userSchema);
+const Data = mongoose.model('Data', dataSchema);
 //bcrypt setup
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-app.get('/', async (req, res) => {
+var userID = null;
+
+app.get('/users', async (req, res) => {
   var all = await User.find();
   console.log(all);
   res.send('Show us what you gots');
@@ -40,8 +49,28 @@ app.get('/login', async (req, res) => {
   const match = await bcrypt.compare(userData.password, user.password);
   if (match) {
     res.send("Password is correct, logging in");
+    userID = user.id;
   }
   else res.send("Password incorrect");
+});
+
+app.get('/data', async (req, res) => {
+  const user = req.body.userID;
+  const data = await Data.find({ id: user });
+  try {
+    res.send(data);
+  } catch(err) {
+    res.status(500).send(err);
+  }
+});
+
+app.get('/alldata', async (req, res) => {
+  var data = await Data.find();
+  try {
+  res.send(data)
+  } catch(err) {
+    res.status(500).send(err);
+  } 
 })
 
 app.post('/', async (req, res) => {
