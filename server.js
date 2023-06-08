@@ -2,11 +2,19 @@
 //server setup
 
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
 
+var corsOptions = {
+  origin: "http://localhost:3000"
+}
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
+app.use(express.json())
+app.use(express.urlencoded({extended: true}));
 
 //database setup
 
@@ -36,10 +44,10 @@ const saltRounds = 10;
 
 var userID = null;
 
-app.get('/users', async (req, res) => {
+app.get('/users', cors(), async (req, res) => {
   var all = await User.find();
   console.log(all);
-  res.send('Show us what you gots');
+  res.send(all);
 });
 
 app.get('/login', async (req, res) => {
