@@ -54,7 +54,7 @@ app.get('/login', async (req, res) => {
   else res.send("Password incorrect");
 });
 
-app.get('/data', async (req, res) => {
+app.get('/userdata', async (req, res) => {
   const user = req.body.userID;
   const data = await Data.find({ id: user });
   try {
@@ -64,16 +64,16 @@ app.get('/data', async (req, res) => {
   }
 });
 
-app.get('/alldata', async (req, res) => {
+app.get('/data', async (req, res) => {
   var data = await Data.find();
   try {
   res.send(data)
   } catch(err) {
     res.status(500).send(err);
   } 
-})
+});
 
-app.post('/', async (req, res) => {
+app.post('/newuser', async (req, res) => {
   var data = req.body;
   await bcrypt.hash(data.password, saltRounds, function(err, hash) {
     data.password = hash;
@@ -86,6 +86,27 @@ app.post('/', async (req, res) => {
     }
   });
 });
+
+app.post('/data', async (req, res) => {
+  var data = req.body
+  const newData = new Data(data);
+  try {
+    newData.save();
+    res.send(newData);
+  } catch(err) {
+    res.status(500).send(err);
+  }
+});
+
+app.delete('/user', async (req, res) => {
+  const user = await User.findOne({ id: req.body.userID});
+  try {
+    User.delete(user);
+    res.send("User Deleted");
+  } catch(err) {
+    res.status(500).send(err);
+  }
+})
 
 app.listen(port, () => {
   console.log(`App listenting on local port ${port}`);
