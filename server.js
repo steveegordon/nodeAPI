@@ -11,7 +11,7 @@ var corsOptions = {
   origin: "http://localhost:3000"
 }
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json())
 app.use(express.urlencoded({extended: true}));
@@ -31,10 +31,16 @@ const userSchema = new mongoose.Schema({
   password: String
 });
 const dataSchema = new mongoose.Schema({
-  id: String,
-  s1: {},
-  s2: {},
-  s3: {}
+  // id: String, ADD USER ID FOR MULTI USER
+  time: String,
+  s1: Number,
+  s2: Number,
+  s3: Number,
+  s4: Number,
+  s5: Number,
+  s6: Number,
+  s7: Number,
+  s8: Number
 });
 const User = mongoose.model('User', userSchema);
 const Data = mongoose.model('Data', dataSchema);
@@ -45,7 +51,7 @@ const saltRounds = 10;
 var userID = null;
 
 app.get('/users', cors(), async (req, res) => {
-  var all = await User.find();
+  var all = await User.find().exec();
   console.log(all);
   res.send(all);
 });
@@ -72,7 +78,7 @@ app.get('/userdata', async (req, res) => {
   }
 });
 
-app.get('/data', async (req, res) => {
+app.get('/data', cors(), async (req, res) => {
   var data = await Data.find();
   try {
   res.send(data)
@@ -95,7 +101,7 @@ app.post('/newuser', async (req, res) => {
   });
 });
 
-app.post('/data', async (req, res) => {
+app.post('/data', cors(), async (req, res) => {
   var data = req.body
   const newData = new Data(data);
   try {
