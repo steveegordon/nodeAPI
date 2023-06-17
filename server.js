@@ -6,6 +6,16 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
+const server = require("socket.io")
+const io = new server(3000);
+
+io.on("connection", (socket) => {
+  socket.emit('connected', 'this is connect');
+
+  socket.on('"sending', (arg) => {
+    console.log(arg);
+  });
+});
 
 var corsOptions = {
   origin: "http://localhost:3000"
