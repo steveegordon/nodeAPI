@@ -6,13 +6,18 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 const bodyParser = require('body-parser');
-const server = require("socket.io")
-const io = new server(3000);
+const server = require('http').createServer(app);
+const { Server } = require('socket.io');
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:4200",
+  },
+});
 
 io.on("connection", (socket) => {
-  socket.emit('connected', 'this is connect');
+  socket.emit('connected', 'this is connect on' + socket);
 
-  socket.on('"sending', (arg) => {
+  socket.on('sending', (arg) => {
     console.log(arg);
   });
 });
@@ -131,7 +136,10 @@ app.delete('/user', async (req, res) => {
     res.status(500).send(err);
   }
 })
-
+// server.listen(port, () => {
+//   console.log(`App listenting on local port ${port}`);
+// });
 app.listen(port, () => {
   console.log(`App listenting on local port ${port}`);
 });
+io.listen(3001);
