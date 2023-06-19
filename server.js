@@ -19,6 +19,8 @@ io.on("connection", (socket) => {
 
   socket.on('sending', (arg) => {
     console.log(arg);
+
+    //socket.emit('updatedData');
   });
 });
 
