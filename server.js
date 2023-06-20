@@ -20,7 +20,6 @@ io.on("connection", (socket) => {
   socket.on('sending', (arg) => {
     console.log(arg);
 
-    //socket.emit('updatedData');
   });
 });
 
@@ -112,6 +111,13 @@ app.post('/newuser', async (req, res) => {
     try {
       newUser.save();
       res.send(newUser);
+      io.emit('newData', (err, res) => {
+        if (err) {
+          console.log('not all clients updated');
+        } else {
+          console.log(res);
+        }
+      })
     } catch(err) {
       res.status(500).send(err);
     }
