@@ -111,7 +111,7 @@ app.post('/newuser', async (req, res) => {
     try {
       newUser.save();
       res.send(newUser);
-      io.emit('newData', (err, res) => {
+      io.timeout(1000).emit('newData', (err, res) => {
         if (err) {
           console.log('not all clients updated');
         } else {
