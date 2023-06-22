@@ -15,7 +15,7 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.emit('connected', 'this is connect on' + socket);
+  socket.emit('connected', 'this is connect on 3001');
 
   socket.on('sending', (arg) => {
     console.log(arg);
@@ -111,13 +111,6 @@ app.post('/newuser', async (req, res) => {
     try {
       newUser.save();
       res.send(newUser);
-      io.timeout(1000).emit('newData', (err, res) => {
-        if (err) {
-          console.log('not all clients updated');
-        } else {
-          console.log(res);
-        }
-      })
     } catch(err) {
       res.status(500).send(err);
     }
@@ -130,6 +123,7 @@ app.post('/data', cors(), async (req, res) => {
   try {
     newData.save();
     res.send(newData);
+    io.timeout(1000).emit('newData', 'download new data');
   } catch(err) {
     res.status(500).send(err);
   }
