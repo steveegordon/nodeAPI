@@ -14,8 +14,11 @@ const io = new Server(server, {
   },
 });
 
+
+
 io.on("connection", (socket) => {
   socket.emit('connected', 'this is connect on 3001');
+  socket.emit('newData', datatas);
 
   socket.on('sending', (arg) => {
     console.log(arg);
@@ -65,6 +68,14 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 var userID = null;
+
+async function allDatas() {
+  var alldata = await Data.find();
+  console.log(alldata);
+  return alldata;
+};
+
+var datatas = allDatas();
 
 app.get('/users', cors(), async (req, res) => {
   var all = await User.find().exec();
@@ -123,7 +134,8 @@ app.post('/data', cors(), async (req, res) => {
   try {
     newData.save();
     res.send(newData);
-    io.timeout(1000).emit('newData', 'download new data');
+    // io.timeout(1000).emit('newData', 'download new data');
+    io.timeout(1000).emit('newData', newData);
   } catch(err) {
     res.status(500).send(err);
   }
