@@ -18,7 +18,10 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   socket.emit('connected', 'this is connect on 3001');
-  socket.emit('newData', datatas);
+  // socket.emit('newData', datatas);
+  socket.on('login', (email, password) => {
+    logIn(socket, email, password);
+  })
 
   socket.on('sending', (arg) => {
     console.log(arg);
@@ -35,7 +38,7 @@ app.use(bodyParser.json());
 app.use(express.json())
 app.use(express.urlencoded({extended: true}));
 
-//database setup
+///////////////database setup////////////////
 
 const mongoose = require('mongoose');
 dbConnect().catch(err => console.log(err));
@@ -50,7 +53,7 @@ const userSchema = new mongoose.Schema({
   password: String
 });
 const dataSchema = new mongoose.Schema({
-  // id: String, ADD USER ID FOR MULTI USER
+  user_id: String,
   time: String,
   s1: Number,
   s2: Number,
@@ -69,13 +72,50 @@ const saltRounds = 10;
 
 var userID = null;
 
-async function allDatas() {
-  var alldata = await Data.find();
+///////////// Socket Data Functions /////////////////
+
+async function logIn(socket, email, password) {
+  var user = await User.findOne({ name: email });
+  if (user) {
+    console.log(user);
+    const match = await bcrypt.compare(password, user.password);
+    if (match) {
+      socket.emit(`logged in as ${email}`);
+      console.log(`logged in as ${email}`);
+      userID = user.id;
+    }
+    else {
+      socket.emit('error', 'incorrect username or password');
+      console.log('login failed');
+    }
+  } 
+  else {
+    socket.emit('error', 'incorrect username or password');
+    console.log('login failed');
+  }
+};
+
+//Testing only
+async function getAllData() {
+  const alldata = await Data.find().exec();
   console.log(alldata);
   return alldata;
 };
 
-var datatas = allDatas();
+async function getUsersData(userID) {
+  const userData = await Data.find({id: userID});
+  console.log(userData);
+  return userData;
+};
+
+async function update(userID) {
+  //Temp Implementation
+  const updatedData = await Data.find({id: userID});
+  console.log(updatedData);
+  return updatedData;
+};
+
+////////////// HTTP ENDPOINTS(Mainly Data Uploads) //////////////
 
 app.get('/users', cors(), async (req, res) => {
   var all = await User.find().exec();
@@ -134,8 +174,6 @@ app.post('/data', cors(), async (req, res) => {
   try {
     newData.save();
     res.send(newData);
-    // io.timeout(1000).emit('newData', 'download new data');
-    io.timeout(1000).emit('newData', newData);
   } catch(err) {
     res.status(500).send(err);
   }
@@ -150,9 +188,8 @@ app.delete('/user', async (req, res) => {
     res.status(500).send(err);
   }
 })
-// server.listen(port, () => {
-//   console.log(`App listenting on local port ${port}`);
-// });
+
+// Setup Listeners, SocketIO on 3001, HTTP on 3000
 app.listen(port, () => {
   console.log(`App listenting on local port ${port}`);
 });
