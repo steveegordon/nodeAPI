@@ -15,13 +15,12 @@ const io = new Server(server, {
 });
 
 
-
 io.on("connection", (socket) => {
   socket.emit('connected', 'this is connect on 3001');
-  // socket.emit('newData', datatas);
+  socket.emit('Data', testData);
   socket.on('login', (email, password) => {
     logIn(socket, email, password);
-  })
+  });
 
   socket.on('sending', (arg) => {
     console.log(arg);
@@ -48,6 +47,7 @@ async function dbConnect() {
 }
 
 const userSchema = new mongoose.Schema({
+  email: String,
   name: String,
   age: Number,
   password: String
@@ -75,7 +75,7 @@ var userID = null;
 ///////////// Socket Data Functions /////////////////
 
 async function logIn(socket, email, password) {
-  var user = await User.findOne({ name: email });
+  var user = await User.findOne({ email: email });
   if (user) {
     console.log(user);
     const match = await bcrypt.compare(password, user.password);
@@ -99,7 +99,7 @@ async function logIn(socket, email, password) {
 async function getAllData() {
   const alldata = await Data.find().exec();
   console.log(alldata);
-  return alldata;
+  testData = alldata;
 };
 
 async function getUsersData(userID) {
@@ -188,7 +188,7 @@ app.delete('/user', async (req, res) => {
     res.status(500).send(err);
   }
 })
-
+let testData = getAllData();
 // Setup Listeners, SocketIO on 3001, HTTP on 3000
 app.listen(port, () => {
   console.log(`App listenting on local port ${port}`);
