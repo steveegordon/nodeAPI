@@ -108,6 +108,10 @@ async function getUsersData(userID) {
   return userData;
 };
 
+let userDataPromise = new Promise(function(res, fail) {
+  getUserData()
+});
+
 async function update(userID) {
   //Temp Implementation
   const updatedData = await Data.find({id: userID});
