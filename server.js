@@ -87,6 +87,22 @@ async function logIn(socket, email, password) {
       socket.emit(`logged in as ${email}`);
       console.log(`logged in as ${email}`);
       userID = user.id;
+      let userDataPromise = new Promise(function(res, err) {
+        const tempdata = getUsersData(userID);
+        if (tempdata.length > 0) {
+          res(tempdata);
+        }
+        else {
+          err('no data sent');
+        }
+      });
+      userDataPromise.then(
+        function(data) {
+          socket.emit('userData', data);
+        },
+        function(error) {
+          console.log(error);
+        });
     }
     else {
       socket.emit('error', 'incorrect username or password');
@@ -111,6 +127,10 @@ async function getUsersData(userID) {
   console.log(userData);
   return userData;
 };
+
+// let userDataPromise = new Promise(function(res, fail) {
+//   getUserData()
+// });
 
 async function update(userID) {
   //Temp Implementation
