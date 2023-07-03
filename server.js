@@ -1,6 +1,6 @@
 /*jshint esversion: 6 */
 //server setup
-
+const testModule = require('./testmodule');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -14,12 +14,16 @@ const io = new Server(server, {
   },
 });
 
-
 io.on("connection", (socket) => {
   socket.emit('connected', 'this is connect on 3001');
-  socket.emit('Data', testData);
   socket.on('login', (email, password) => {
     logIn(socket, email, password);
+    if (userID) {
+      socket.emit('Data', getUsersData(userID));
+    }
+    else {
+      console.log("no userID or not ready");
+    }
   });
 
   socket.on('sending', (arg) => {
@@ -96,14 +100,14 @@ async function logIn(socket, email, password) {
 };
 
 //Testing only
-async function getAllData() {
-  const alldata = await Data.find().exec();
-  console.log(alldata);
-  testData = alldata;
-};
+// async function getAllData() {
+//   const alldata = await Data.find().exec();
+//   console.log(alldata);
+//   testData = alldata;
+// };
 
 async function getUsersData(userID) {
-  const userData = await Data.find({id: userID});
+  const userData = await Data.find({user_id: userID});
   console.log(userData);
   return userData;
 };
@@ -188,7 +192,7 @@ app.delete('/user', async (req, res) => {
     res.status(500).send(err);
   }
 })
-let testData = getAllData();
+// let testData = getAllData();
 // Setup Listeners, SocketIO on 3001, HTTP on 3000
 app.listen(port, () => {
   console.log(`App listenting on local port ${port}`);
