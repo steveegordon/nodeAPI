@@ -18,12 +18,6 @@ io.on("connection", (socket) => {
   socket.emit('connected', 'this is connect on 3001');
   socket.on('login', (email, password) => {
     logIn(socket, email, password);
-    if (userID) {
-      socket.emit('Data', getUsersData(userID));
-    }
-    else {
-      console.log("no userID or not ready");
-    }
   });
 
   socket.on('sending', (arg) => {
@@ -87,22 +81,7 @@ async function logIn(socket, email, password) {
       socket.emit(`logged in as ${email}`);
       console.log(`logged in as ${email}`);
       userID = user.id;
-      let userDataPromise = new Promise(function(res, err) {
-        const tempdata = getUsersData(userID);
-        if (tempdata.length > 0) {
-          res(tempdata);
-        }
-        else {
-          err('no data sent');
-        }
-      });
-      userDataPromise.then(
-        function(data) {
-          socket.emit('userData', data);
-        },
-        function(error) {
-          console.log(error);
-        });
+      getUsersData(userID, socket);
     }
     else {
       socket.emit('error', 'incorrect username or password');
@@ -122,10 +101,10 @@ async function logIn(socket, email, password) {
 //   testData = alldata;
 // };
 
-async function getUsersData(userID) {
-  const userData = await Data.find({user_id: userID});
+async function getUsersData(userID, socket) {
+  const userData = await Data.find({user_id: userID}).exec();
   console.log(userData);
-  return userData;
+  socket.emit('userData', userData);
 };
 
 // let userDataPromise = new Promise(function(res, fail) {
