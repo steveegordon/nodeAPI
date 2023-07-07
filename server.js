@@ -107,9 +107,6 @@ async function getUsersData(userID, socket) {
   socket.emit('userData', userData);
 };
 
-// let userDataPromise = new Promise(function(res, fail) {
-//   getUserData()
-// });
 
 async function update(userID) {
   //Temp Implementation
@@ -191,7 +188,7 @@ app.delete('/user', async (req, res) => {
     res.status(500).send(err);
   }
 })
-// let testData = getAllData();
+
 // Setup Listeners, SocketIO on 3001, HTTP on 3000
 app.listen(port, () => {
   console.log(`App listenting on local port ${port}`);
