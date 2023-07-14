@@ -16,7 +16,7 @@ const io = new Server(server, {
 
 
 io.on("connection", (socket) => {
-  socket.emit('connected', 'this is connect on 3001');
+  socket.emit('connected', `this is connect on 3001 with socket id: ${socket.id}`);
   socket.emit('Data', testData);
   socket.on('login', (email, password) => {
     logIn(socket, email, password);
