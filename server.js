@@ -1,5 +1,6 @@
 /*jshint esversion: 6 */
 //server setup
+//ADD SOCKET BROADCASTS ON API DATA POSTS
 
 const express = require('express');
 const cors = require('cors');
