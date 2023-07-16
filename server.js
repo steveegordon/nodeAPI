@@ -1,6 +1,7 @@
 /*jshint esversion: 6 */
 //server setup
 //ADD SOCKET BROADCASTS ON API DATA POSTS
+//Socket.id to verify which users online
 
 const express = require('express');
 const cors = require('cors');
