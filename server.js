@@ -2,6 +2,7 @@
 //server setup
 //ADD SOCKET BROADCASTS ON API DATA POSTS
 //Socket.id to verify which users online
+//Create user check and push update
 
 const express = require('express');
 const cors = require('cors');
