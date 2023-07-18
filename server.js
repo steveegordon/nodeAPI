@@ -17,6 +17,8 @@ const io = new Server(server, {
   },
 });
 
+let activeUsers = {};
+
 
 io.on("connection", (socket) => {
   socket.emit('connected', `this is connect on 3001 with socket id: ${socket.id}`);
@@ -86,6 +88,9 @@ async function logIn(socket, email, password) {
       socket.emit(`logged in as ${email}`);
       console.log(`logged in as ${email}`);
       userID = user.id;
+      //fix for actual userID
+      activeUsers.userID = socket.id;
+      console.log(activeUsers);
       let userDataPromise = new Promise(function(res, err) {
         const tempdata = getUsersData(userID);
         if (tempdata.length > 0) {
