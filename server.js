@@ -88,8 +88,7 @@ async function logIn(socket, email, password) {
       socket.emit(`logged in as ${email}`);
       console.log(`logged in as ${email}`);
       userID = user.id;
-      //fix for actual userID
-      activeUsers.userID = socket.id;
+      activeUsers[`${userID}`] = socket.id;
       console.log(activeUsers);
       let userDataPromise = new Promise(function(res, err) {
         const tempdata = getUsersData(userID);
